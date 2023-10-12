@@ -7,7 +7,16 @@ namespace bustub {
 template <class T>
 auto Trie::Get(std::string_view key) const -> const T * {
   throw NotImplementedException("Trie::Get is not implemented.");
-
+  if(this->root_ == nullptr) return nullptr;
+  TrieNode* cnt_node = this->root_;
+  for(int i=0;i<key.size();i++)
+  {
+    if(cnt_node->children_.find(key[i])==cnt_node->children_.end()) return nullptr;
+    cnt_node = cnt_node->children_[key[i]];
+  }
+  if(cnt_node->is_value_node_ == false) return nullptr;
+  cnt_value_node = dynamic_cast<TrieNodeWithValue*>(cnt_node);
+  return dynamic_cast<T>(cnt_value_node->value);
   // You should walk through the trie to find the node corresponding to the key. If the node doesn't exist, return
   // nullptr. After you find the node, you should use `dynamic_cast` to cast it to `const TrieNodeWithValue<T> *`. If
   // dynamic_cast returns `nullptr`, it means the type of the value is mismatched, and you should return nullptr.
@@ -17,14 +26,40 @@ auto Trie::Get(std::string_view key) const -> const T * {
 template <class T>
 auto Trie::Put(std::string_view key, T value) const -> Trie {
   // Note that `T` might be a non-copyable type. Always use `std::move` when creating `shared_ptr` on that value.
-  throw NotImplementedException("Trie::Put is not implemented.");
-
+  //throw NotImplementedException("Trie::Put is not implemented.");
+  if(this->root_ == nullptr)
+  {
+    this->root_ = std::make_shared<TrieNode>();
+  }
+  TrieNode* cnt_node = this->root_;
+  for(int i=0;i<key.size()-1;i++)
+  {
+    if(cnt_node->children_.find(key[i])==cnt_node->children_.end())
+    {
+      cnt_node->children_[key[i]] = make_shared<TrieNode>();
+    }
+    cnt_node = cnt_node->children_[key[i]];
+  }
+  cnt_node->children_[key[key.size()-1]] = make_shared<TrieNodeWithValue>(std::move(value));
+  return this;
   // You should walk through the trie and create new nodes if necessary. If the node corresponding to the key already
   // exists, you should create a new `TrieNodeWithValue`.
 }
 
 auto Trie::Remove(std::string_view key) const -> Trie {
-  throw NotImplementedException("Trie::Remove is not implemented.");
+  //throw NotImplementedException("Trie::Remove is not implemented.");
+  if(this->root_ == nullptr) return this;
+  TrieNode* cnt_node = this->root_;
+  for(int i=0;i<key.size();i++)
+  {
+    if(cnt_node->children_.find(key[i]) == cnt_node->children_.end()) break;
+    cnt_node = cnt_node->children_[key[i]];
+  }
+  if(cnt_node->is_value_node_ == true)
+  {
+    cnt_node->is_value_node_ = false;
+  }
+  return this;
 
   // You should walk through the trie and remove nodes if necessary. If the node doesn't contain a value any more,
   // you should convert it to `TrieNode`. If a node doesn't have children any more, you should remove it.

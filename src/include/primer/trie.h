@@ -47,6 +47,7 @@ class TrieNode {
   TrieNode() = default;
 
   // Create a TrieNode with some children.
+  // children这个map来存孩子结点，根据char指向孩子
   explicit TrieNode(std::map<char, std::shared_ptr<const TrieNode>> children) : children_(std::move(children)) {}
 
   virtual ~TrieNode() = default;
