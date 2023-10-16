@@ -40,10 +40,11 @@ auto Trie::Put(std::string_view key, T value) const -> Trie {
     }
     else cnt_node = cnt_node->children_.at(key[i]);
   }
- //注意，如果是原来trie里就有key的话，原叶子结点不能加入到stack里面。
- //因为不管怎么样叶子结点都不是重复的。
+  if(cnt_node!=nullptr) node_stack.push(cnt_node);
+  std::cout<<key<<std::endl;
+  std::cout<<node_stack.size()<<std::endl;
   std::shared_ptr<const TrieNodeWithValue<T>> leaf_node;
-  if(cnt_node==nullptr) leaf_node = std::make_shared<const TrieNodeWithValue<T>> (std::move(shared_value));
+  if((size_t)node_stack.size() != (size_t)key.size()+1) leaf_node = std::make_shared<const TrieNodeWithValue<T>> (std::move(shared_value));
   else leaf_node = std::make_shared<const TrieNodeWithValue<T>> (cnt_node->children_, std::move(shared_value));
   std::shared_ptr<const TrieNode> child_node = leaf_node;
   for(int i=(int)key.size()-1;i>=(int)node_stack.size();i--)
