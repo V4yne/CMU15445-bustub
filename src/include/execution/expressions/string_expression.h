@@ -46,7 +46,23 @@ class StringExpression : public AbstractExpression {
 
   auto Compute(const std::string &val) const -> std::string {
     // TODO(student): implement upper / lower.
-    return {};
+    std::string result = val;
+    if (expr_type_ == StringExpressionType::Lower) {
+      for (char &i : result) {
+        if (i >= 'A' && i <= 'Z') {
+          i = i - 'A' + 'a';
+        }
+      }
+    }
+    if (expr_type_ == StringExpressionType::Upper) {
+      for (char &i : result) {
+        if (i >= 'a' && i <= 'z') {
+          i = i - 'a' + 'A';
+        }
+      }
+    }
+    return result;
+    //    return {};
   }
 
   auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override {
@@ -62,7 +78,8 @@ class StringExpression : public AbstractExpression {
     return ValueFactory::GetVarcharValue(Compute(str));
   }
 
-  /** @return the string representation of the expression node and its children */
+  /** @return the string representation of the expression node and its
+   * children */
   auto ToString() const -> std::string override { return fmt::format("{}({})", expr_type_, *GetChildAt(0)); }
 
   BUSTUB_EXPR_CLONE_WITH_CHILDREN(StringExpression);
